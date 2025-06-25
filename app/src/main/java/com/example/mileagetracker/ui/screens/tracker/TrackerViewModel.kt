@@ -59,7 +59,7 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
     private fun stopForegroundService() {
         val intent = Intent(context, ForegroundTrackingService::class.java)
         intent.action = "ACTION_STOP"
-        context.stopService(intent)
+        ContextCompat.startForegroundService(context, intent)
     }
 
     private fun startElapsedCounter() {

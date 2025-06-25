@@ -30,7 +30,10 @@ class ForegroundTrackingService : Service() {
     ): Int {
         when (intent?.action) {
             "ACTION_START" -> startTracking()
-            "ACTION_STOP" -> stopSelf()
+            "ACTION_STOP" -> {
+                stopTracking()
+                stopSelf()
+            }
         }
         return START_STICKY
     }
@@ -59,6 +62,16 @@ class ForegroundTrackingService : Service() {
             Looper.getMainLooper()
         )
     }
+
+    private fun stopTracking() {
+        try {
+            fusedClient.removeLocationUpdates(locationCallback)
+            Log.d(this.javaClass.name, "Removed location callback")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     private fun sendLocationToViewModel(location: Location) {
         LocationDataManager.updateLocation(location = location)
