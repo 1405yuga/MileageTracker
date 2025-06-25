@@ -1,4 +1,4 @@
-package com.example.mileagetracker.ui.screens.history
+package com.example.mileagetracker.ui.screens.nav_menus.history
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

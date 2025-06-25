@@ -32,8 +32,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.R
-import com.example.mileagetracker.ui.screens.history.HistoryScreen
-import com.example.mileagetracker.ui.screens.start.StartScreen
+import com.example.mileagetracker.ui.screens.nav_menus.history.HistoryScreen
+import com.example.mileagetracker.ui.screens.nav_menus.start.StartScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
