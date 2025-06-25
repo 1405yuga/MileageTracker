@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MileageTracker"
         tools:targetApi="31">
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBhSzhXvSFKVmC1Zw76o1uoo9S-zhbLNHk"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
