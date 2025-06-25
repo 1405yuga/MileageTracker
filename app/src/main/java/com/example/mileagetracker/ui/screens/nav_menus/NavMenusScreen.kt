@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Open)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val menuItems = listOf(NavMenusScreen.Start, NavMenusScreen.History)
     var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.Start) }

@@ -1,19 +1,26 @@
 package com.example.mileagetracker.ui.screens.tracker
 
 import android.content.Context
+import android.content.Intent
+import android.location.Location
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mileagetracker.utils.services.ForegroundTrackingService
+import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TrackerViewModel @Inject constructor(@ApplicationContext context: Context) : ViewModel() {
+class TrackerViewModel @Inject constructor(@ApplicationContext val context: Context) : ViewModel() {
     private val _localPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val localPoints: StateFlow<List<LatLng>> = _localPoints
 
@@ -27,27 +34,52 @@ class TrackerViewModel @Inject constructor(@ApplicationContext context: Context)
     fun startJourney() {
         startTime = System.currentTimeMillis()
         _isTracking.value = true
-        // TODO: start foreground
+        startForegroundService()
         startElapsedCounter()
     }
 
     fun stopJourney() {
-        // TODO: stop foreground
+        stopForegroundService()
         _isTracking.value = false
         _localPoints.value = emptyList()
         _elapsedTime.value = 0L
     }
 
+    private fun startForegroundService() {
+        val intent = Intent(context, ForegroundTrackingService::class.java)
+        intent.action = "ACTION_START"
+        ContextCompat.startForegroundService(context, intent)
+    }
+
+    private fun stopForegroundService() {
+        val intent = Intent(context, ForegroundTrackingService::class.java)
+        intent.action = "ACTION_STOP"
+        context.stopService(intent)
+    }
+
     private fun startElapsedCounter() {
         viewModelScope.launch {
-            while (_isTracking.value == true) {
+            while (_isTracking.value) {
                 delay(1000L)
                 _elapsedTime.value = (System.currentTimeMillis() - startTime)
             }
         }
     }
 
+    fun onNewLocation(location: Location) {
+        val updated = _localPoints.value.toMutableList()
+        updated.add(LatLng(location.latitude, location.longitude))
+        _localPoints.value = updated
+    }
+
     init {
         startJourney()
+        viewModelScope.launch {
+            LocationDataManager.location
+                .filterNotNull()
+                .collectLatest { location ->
+                    onNewLocation(location)
+                }
+        }
     }
 }
