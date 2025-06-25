@@ -30,10 +30,7 @@ class ForegroundTrackingService : Service() {
     ): Int {
         when (intent?.action) {
             "ACTION_START" -> startTracking()
-            "ACTION_STOP" -> {
-                Log.d(this.javaClass.name, "Foreground service stopped..")
-                stopSelf()
-            }
+            "ACTION_STOP" -> stopSelf()
         }
         return START_STICKY
     }

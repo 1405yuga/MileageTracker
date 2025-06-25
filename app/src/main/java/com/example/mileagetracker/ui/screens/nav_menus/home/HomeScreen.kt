@@ -1,7 +1,6 @@
-package com.example.mileagetracker.ui.screens.nav_menus.start
+package com.example.mileagetracker.ui.screens.nav_menus.home
 
 import android.Manifest
-import android.app.Activity
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,7 +18,7 @@ import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 
 @Composable
-fun StartScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
+fun HomeScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
     val permissionsToRequest = mutableListOf(
@@ -55,7 +54,7 @@ fun StartScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
                 permissionLauncher.launch(permissionsToRequest.toTypedArray())
             }
         }) {
-            Text(text = "Start Journey")
+            Text(text = "Get Started")
         }
     }
 }
@@ -63,11 +62,11 @@ fun StartScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
 @VerticalScreenPreview
 @Composable
 fun TrackerScreenVertical() {
-    StartScreen(onStart = {})
+    HomeScreen(onStart = {})
 }
 
 @HorizontalScreenPreview
 @Composable
 fun TrackerScreenHorizontal() {
-    StartScreen(onStart = {})
+    HomeScreen(onStart = {})
 }

@@ -33,7 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.R
 import com.example.mileagetracker.ui.screens.nav_menus.history.HistoryScreen
-import com.example.mileagetracker.ui.screens.nav_menus.start.StartScreen
+import com.example.mileagetracker.ui.screens.nav_menus.home.HomeScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,8 +41,8 @@ import kotlinx.coroutines.launch
 fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val menuItems = listOf(NavMenusScreen.Start, NavMenusScreen.History)
-    var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.Start) }
+    val menuItems = listOf(NavMenusScreen.Home, NavMenusScreen.History)
+    var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.Home) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -82,8 +82,8 @@ fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
         }) { padding ->
             Box(modifier = modifier.padding(padding)) {
                 when (selectedMenu) {
-                    NavMenusScreen.Start -> {
-                        StartScreen(onStart = { onStart() }, modifier = modifier)
+                    NavMenusScreen.Home -> {
+                        HomeScreen(onStart = { onStart() }, modifier = modifier)
                     }
 
                     NavMenusScreen.History -> {
@@ -98,5 +98,5 @@ fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 enum class NavMenusScreen(val icon: ImageVector) {
-    Start(icon = Icons.Default.Star), History(icon = Icons.Default.Refresh),
+    Home(icon = Icons.Default.Star), History(icon = Icons.Default.Refresh),
 }

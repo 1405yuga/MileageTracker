@@ -11,6 +11,7 @@ import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,6 +32,8 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
     private val _elapsedTime = MutableStateFlow(0L)
     val elapsedTime: StateFlow<Long> = _elapsedTime
 
+    private var elapsedJob: Job? = null
+
     fun startJourney() {
         startTime = System.currentTimeMillis()
         _isTracking.value = true
@@ -42,6 +45,8 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
         stopForegroundService()
         _isTracking.value = false
         _localPoints.value = emptyList()
+        elapsedJob?.cancel()
+        elapsedJob = null
         _elapsedTime.value = 0L
     }
 
@@ -58,7 +63,7 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
     }
 
     private fun startElapsedCounter() {
-        viewModelScope.launch {
+        elapsedJob = viewModelScope.launch {
             while (_isTracking.value) {
                 delay(1000L)
                 _elapsedTime.value = (System.currentTimeMillis() - startTime)
@@ -73,7 +78,6 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
     }
 
     init {
-        startJourney()
         viewModelScope.launch {
             LocationDataManager.location
                 .filterNotNull()
