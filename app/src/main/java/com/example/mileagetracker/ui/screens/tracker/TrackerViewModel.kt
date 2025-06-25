@@ -6,7 +6,9 @@ import android.location.Location
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mileagetracker.data.JourneyData
 import com.example.mileagetracker.data.Summary
+import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
@@ -22,7 +24,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TrackerViewModel @Inject constructor(@ApplicationContext val context: Context) : ViewModel() {
+class TrackerViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
+    private val journeyRepository: JourneyRepository
+) : ViewModel() {
     private val _localPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val localPoints: StateFlow<List<LatLng>> = _localPoints
 
@@ -37,11 +42,12 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
 
     private var elapsedJob: Job? = null
 
-    fun startJourney() {
+    fun startJourney(title: String) {
         startTime = System.currentTimeMillis()
         _isTracking.value = true
         startForegroundService()
         startElapsedCounter()
+        addJourney(title = title, startTime)
     }
 
     fun stopJourney(title: String) {
@@ -106,6 +112,21 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
 
         }
         return total
+    }
+
+    fun addJourney(title: String, startTime: Long) {
+        viewModelScope.launch {
+            try {
+                journeyRepository.insertJourney(
+                    journey = JourneyData(
+                        title = title,
+                        startTime = startTime
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     init {

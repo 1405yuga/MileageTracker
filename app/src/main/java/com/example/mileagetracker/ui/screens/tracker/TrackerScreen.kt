@@ -28,7 +28,10 @@ fun TrackerScreen(
         Text(journeyText, fontWeight = FontWeight.Bold)
         Text(text = "Local points : $localPoints")
         Row {
-            Button(onClick = { viewModel.startJourney() }, enabled = !isTracking) {
+            Button(
+                onClick = { viewModel.startJourney(title = journeyText) },
+                enabled = !isTracking
+            ) {
                 Text(text = "Start Journey")
             }
 
