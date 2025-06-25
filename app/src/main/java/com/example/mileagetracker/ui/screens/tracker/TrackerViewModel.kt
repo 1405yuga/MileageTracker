@@ -77,6 +77,26 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
         _localPoints.value = updated
     }
 
+    fun calculateDistance(): Float {
+        if (_localPoints.value.size < 2) return 0f
+        var total = 0f
+        for (i in 0 until _localPoints.value.size - 1) {
+            val loc1 = Location("").apply {
+                latitude = _localPoints.value[i].latitude
+                longitude = _localPoints.value[i].longitude
+            }
+
+            val loc2 = Location("").apply {
+                latitude = _localPoints.value[i + 1].latitude
+                longitude = _localPoints.value[i + 1].longitude
+            }
+
+            total += loc1.distanceTo(loc2)
+
+        }
+        return total
+    }
+
     init {
         viewModelScope.launch {
             LocationDataManager.location

@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.mileagetracker.ui.screens.nav_menus.NavMenusScreen
 import com.example.mileagetracker.ui.screens.tracker.TrackerScreen
 import com.example.mileagetracker.ui.theme.MileageTrackerTheme
@@ -47,12 +48,25 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
     ) {
         composable(Screen.NavMenu.name) {
             NavMenusScreen(
-                onStart = { navController.navigate(Screen.Tracker.name) },
+                onStart = { journeyName ->
+                    navController.navigate("${Screen.Tracker.name}/$journeyName")
+                },
                 modifier = modifier
             )
         }
-        composable(Screen.Tracker.name) {
-            TrackerScreen(viewModel = hiltViewModel(), modifier = modifier)
+
+        composable(
+            route = "${Screen.Tracker.name}/{journeyName}",
+            arguments = listOf(navArgument("journeyName") { defaultValue = "Untitled Journey" })
+        ) { backStackEntry ->
+            val journeyText: String =
+                backStackEntry.arguments?.getString("journeyName").takeIf { !(it.isNullOrBlank()) }
+                    ?: "Untitled"
+            TrackerScreen(
+                journeyText = journeyText,
+                viewModel = hiltViewModel(),
+                modifier = modifier
+            )
         }
     }
 }

@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
+fun NavMenusScreen(onStart: (journeyTitle: String) -> Unit, modifier: Modifier = Modifier) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val menuItems = listOf(NavMenusScreen.Home, NavMenusScreen.History)
@@ -83,7 +83,7 @@ fun NavMenusScreen(onStart: () -> Unit, modifier: Modifier = Modifier) {
             Box(modifier = modifier.padding(padding)) {
                 when (selectedMenu) {
                     NavMenusScreen.Home -> {
-                        HomeScreen(onStart = { onStart() }, modifier = modifier)
+                        HomeScreen(onStart = { onStart(it) }, modifier = modifier)
                     }
 
                     NavMenusScreen.History -> {
