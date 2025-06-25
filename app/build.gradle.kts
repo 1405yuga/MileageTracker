@@ -71,5 +71,9 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:6.4.1")
     //gson---------------------------------------------
     implementation("com.google.code.gson:gson:2.13.1")
+    //room----------------------------------------------
+    implementation("androidx.room:room-runtime:2.7.2")
+    ksp("androidx.room:room-compiler:2.7.2")
+    implementation("androidx.room:room-ktx:2.7.2")
 
 }
