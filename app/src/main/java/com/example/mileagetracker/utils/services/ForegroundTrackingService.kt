@@ -41,7 +41,7 @@ class ForegroundTrackingService : Service() {
         startForeground(1, NotificationHelper.createNotification(this))
         Log.d(this.javaClass.name, "Foreground service started..")
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 500) // TODO: change to 5000
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
             .setMinUpdateDistanceMeters(10f)
             .build()
 

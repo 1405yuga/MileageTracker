@@ -1,6 +1,5 @@
 package com.example.mileagetracker.ui.screens.tracker
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,12 +43,11 @@ fun TrackerScreen(viewModel: TrackerViewModel, modifier: Modifier = Modifier) {
 
 @Composable
 fun MapScreen(points: List<LatLng>) {
-    Log.d("TrackScreen", "Points received : $points")
     val cameraPositionState = rememberCameraPositionState()
 
     LaunchedEffect(points.lastOrNull()) {
         points.lastOrNull()?.let { latestLoc ->
-            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latestLoc, 16f))
+            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latestLoc, 24f))
 
         }
     }
