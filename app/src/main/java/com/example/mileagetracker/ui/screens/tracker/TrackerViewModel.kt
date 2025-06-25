@@ -6,6 +6,7 @@ import android.location.Location
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
@@ -29,6 +30,8 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
     val isTracking: StateFlow<Boolean> = _isTracking
 
     private var startTime: Long = 0L
+    private var endTime: Long = 0L
+    lateinit var summary: Summary
     private val _elapsedTime = MutableStateFlow(0L)
     val elapsedTime: StateFlow<Long> = _elapsedTime
 
@@ -41,7 +44,15 @@ class TrackerViewModel @Inject constructor(@ApplicationContext val context: Cont
         startElapsedCounter()
     }
 
-    fun stopJourney() {
+    fun stopJourney(title: String) {
+        endTime = System.currentTimeMillis()
+        summary = Summary(
+            title = title,
+            points = _localPoints.value,
+            distanceInMeters = calculateDistance(),
+            startTime = startTime,
+            endTime = endTime
+        )
         stopForegroundService()
         _isTracking.value = false
         _localPoints.value = emptyList()

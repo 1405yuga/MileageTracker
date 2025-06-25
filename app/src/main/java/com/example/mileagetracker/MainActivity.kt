@@ -15,11 +15,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.ui.screens.nav_menus.NavMenusScreen
+import com.example.mileagetracker.ui.screens.summary.SummaryScreen
 import com.example.mileagetracker.ui.screens.tracker.TrackerScreen
 import com.example.mileagetracker.ui.theme.MileageTrackerTheme
 import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,8 +68,26 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
             TrackerScreen(
                 journeyText = journeyText,
                 viewModel = hiltViewModel(),
+                goToSummaryScreen = { summary ->
+                    val summaryString = Gson().toJson(summary)
+                    navController.navigate("${Screen.Summary.name}/$summaryString")
+                },
                 modifier = modifier
             )
+        }
+
+        composable(
+            route = "${Screen.Summary.name}/{summaryJson}",
+            arguments = listOf(
+                navArgument(
+                    "summaryJson"
+                ) {})
+        ) { backStackEntry ->
+            val summary: Summary? = Gson().fromJson(
+                backStackEntry.arguments?.getString("summaryJson"),
+                Summary::class.java
+            )
+            SummaryScreen(summary = summary, modifier = modifier)
         }
     }
 }
@@ -84,5 +105,5 @@ fun MileageTrackerHorizontal() {
 }
 
 enum class Screen {
-    NavMenu, Tracker
+    NavMenu, Tracker, Summary
 }

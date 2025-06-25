@@ -6,24 +6,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Polyline
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.example.mileagetracker.data.Summary
+import com.example.mileagetracker.utils.composable.MapScreen
 
 @Composable
 fun TrackerScreen(
     journeyText: String,
     viewModel: TrackerViewModel,
+    goToSummaryScreen: (summary: Summary) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val elapsedTime by viewModel.elapsedTime.collectAsState()
@@ -32,14 +26,16 @@ fun TrackerScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         Text(journeyText, fontWeight = FontWeight.Bold)
-        Text(text = "Elapsed time : $elapsedTime")
         Text(text = "Local points : $localPoints")
         Row {
             Button(onClick = { viewModel.startJourney() }, enabled = !isTracking) {
                 Text(text = "Start Journey")
             }
 
-            Button(onClick = { viewModel.stopJourney() }, enabled = isTracking) {
+            Button(onClick = {
+                viewModel.stopJourney(title = journeyText)
+                goToSummaryScreen(viewModel.summary)
+            }, enabled = isTracking) {
                 Text(text = "Stop Journey")
             }
         }
@@ -47,24 +43,11 @@ fun TrackerScreen(
     }
 }
 
-@Composable
-fun MapScreen(points: List<LatLng>) {
-    val cameraPositionState = rememberCameraPositionState()
-
-    LaunchedEffect(points.lastOrNull()) {
-        points.lastOrNull()?.let { latestLoc ->
-            cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latestLoc, 24f))
-
-        }
-    }
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(isMyLocationEnabled = true),
-        uiSettings = MapUiSettings(zoomControlsEnabled = true)
-    ) {
-        if (points.size > 1) {
-            Polyline(points = points, color = Color.Blue, width = 5f)
-        }
-    }
-}
+//@Composable
+//@VerticalScreenPreview
+//fun TrackerScreenVertical(){
+//    TrackerScreen(
+//        journeyText = "Untitle journey",
+//        viewModel = TrackerViewModel(),
+//    )
+//}
