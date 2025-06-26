@@ -106,7 +106,9 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
                         journeyText = journeyText,
                         viewModel = hiltViewModel(),
                         goToSummaryScreen = { summaryId ->
-                            navController.navigate("${Screen.Summary.name}/$summaryId")
+                            navController.navigate("${Screen.Summary.name}/$summaryId") {
+                                popUpTo(Screen.NavMenu.name) { inclusive = false }
+                            }
                         },
                         mainViewModel = viewModel,
                         modifier = modifier
