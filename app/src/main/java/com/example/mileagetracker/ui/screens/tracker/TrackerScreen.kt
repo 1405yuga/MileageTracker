@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.example.mileagetracker.data.Summary
-import com.example.mileagetracker.utils.composable.MapScreen
+import com.example.mileagetracker.utils.helper.MapScreen
 
 @Composable
 fun TrackerScreen(

@@ -12,6 +12,7 @@ import com.example.mileagetracker.data.PointsData
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
+import com.example.mileagetracker.utils.helper.HelperFunctions
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
@@ -60,7 +61,7 @@ class TrackerViewModel @Inject constructor(
                     id = journeyId!!,
                     title = title,
                     points = _localPoints.value,
-                    distanceInMeters = calculateDistance(),
+                    distanceInMeters = HelperFunctions.calculateDistance(pointsList = _localPoints.value),
                     startTime = startTime,
                     endTime = endTime
                 )
@@ -107,26 +108,6 @@ class TrackerViewModel @Inject constructor(
             Log.d(this.javaClass.simpleName, "Journey id null")
             // TODO: give error
         }
-    }
-
-    fun calculateDistance(): Float {
-        if (_localPoints.value.size < 2) return 0f
-        var total = 0f
-        for (i in 0 until _localPoints.value.size - 1) {
-            val loc1 = Location("").apply {
-                latitude = _localPoints.value[i].latitude
-                longitude = _localPoints.value[i].longitude
-            }
-
-            val loc2 = Location("").apply {
-                latitude = _localPoints.value[i + 1].latitude
-                longitude = _localPoints.value[i + 1].longitude
-            }
-
-            total += loc1.distanceTo(loc2)
-
-        }
-        return total
     }
 
     fun addJourney(title: String, startTime: Long) {

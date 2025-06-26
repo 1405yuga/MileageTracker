@@ -1,4 +1,4 @@
-package com.example.mileagetracker.utils.composable
+package com.example.mileagetracker.utils.helper
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
