@@ -1,4 +1,4 @@
-package com.example.mileagetracker
+package com.example.mileagetracker.ui.screens.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
