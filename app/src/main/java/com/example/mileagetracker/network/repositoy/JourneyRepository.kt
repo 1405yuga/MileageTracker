@@ -18,4 +18,8 @@ class JourneyRepository @Inject constructor(private val journeyDao: JourneyDao) 
     suspend fun deleteJourneyById(id: Long): Int {
         return journeyDao.deleteJourneyById(id = id)
     }
+
+    suspend fun updateEndTime(journeyId: Long, endTime: Long) {
+        journeyDao.updateEndTime(journeyId, endTime)
+    }
 }

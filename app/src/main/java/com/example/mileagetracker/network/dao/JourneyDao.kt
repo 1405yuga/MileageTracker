@@ -17,4 +17,7 @@ interface JourneyDao {
     @Query("DELETE FROM ${JourneyData.TABLE_NAME} WHERE id = :id")
     suspend fun deleteJourneyById(id: Long): Int
 
+    @Query("UPDATE ${JourneyData.TABLE_NAME} SET ${JourneyData.COLUMN_END_TIME} = :endTime WHERE id = :id")
+    suspend fun updateEndTime(id: Long, endTime: Long)
+
 }
