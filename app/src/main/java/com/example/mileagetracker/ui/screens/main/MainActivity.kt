@@ -110,6 +110,7 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
                             val summaryString = Gson().toJson(summary)
                             navController.navigate("${Screen.Summary.name}/$summaryString")
                         },
+                        mainViewModel = viewModel,
                         modifier = modifier
                     )
                 }

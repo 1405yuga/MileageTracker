@@ -45,11 +45,22 @@ class TrackerViewModel @Inject constructor(
 
     private var elapsedJob: Job? = null
 
-    fun startJourney(title: String) {
+    fun startJourney(title: String, onComplete: (Summary) -> Unit) {
         startTime = System.currentTimeMillis()
         _isTracking.value = true
         startForegroundService()
-        addJourney(title = title, startTime)
+        addJourney(title = title, startTime, onSuccess = { id ->
+            onComplete(
+                Summary(
+                    id = id,
+                    title = title,
+                    points = emptyList(),
+                    distanceInMeters = 0.0f,
+                    startTime = startTime,
+                    endTime = null
+                )
+            )
+        })
     }
 
     fun stopJourney(title: String, onComplete: (Summary) -> Unit) {
@@ -110,7 +121,7 @@ class TrackerViewModel @Inject constructor(
         }
     }
 
-    fun addJourney(title: String, startTime: Long) {
+    fun addJourney(title: String, startTime: Long, onSuccess: (journeyId: Long) -> Unit) {
         viewModelScope.launch {
             journeyRepository.insertJourney(
                 journey = JourneyData(
@@ -120,6 +131,7 @@ class TrackerViewModel @Inject constructor(
                 onSuccess = { id ->
                     // TODO: add in static list
                     journeyId = id
+                    onSuccess(id)
                 },
                 onFailure = {}
             )

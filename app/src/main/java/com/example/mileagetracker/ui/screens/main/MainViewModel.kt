@@ -31,6 +31,29 @@ class MainViewModel @Inject constructor(
         loadAllSummary()
     }
 
+    fun addNewToList(summary: Summary) {
+        val updated = _summaryList.value.toMutableList()
+        updated.add(summary)
+        _summaryList.value = updated
+    }
+
+    fun updatePointsInSummaryList(summaryId: Long, point: LatLng) {
+        val updated = _summaryList.value.map { summary ->
+            if (summary.id == summaryId) summary.copy(points = summary.points + point)
+            else summary
+        }
+        _summaryList.value = updated
+    }
+
+    fun updateEndTime(summaryId: Long, endTime: Long) {
+        val updated = _summaryList.value.map { summary ->
+            if (summary.id == summaryId) summary.copy(endTime = endTime)
+            else summary
+        }
+        _summaryList.value = updated
+
+    }
+
     fun loadAllSummary() {
         _screenState.value = ScreenState.Loading()
         viewModelScope.launch {

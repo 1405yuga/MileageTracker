@@ -11,12 +11,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.example.mileagetracker.data.Summary
+import com.example.mileagetracker.ui.screens.main.MainViewModel
 import com.example.mileagetracker.utils.helper.MapScreen
 
 @Composable
 fun TrackerScreen(
     journeyText: String,
     viewModel: TrackerViewModel,
+    mainViewModel: MainViewModel,
     goToSummaryScreen: (summary: Summary) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -28,7 +30,12 @@ fun TrackerScreen(
         Text(text = "Local points : $localPoints")
         Row {
             Button(
-                onClick = { viewModel.startJourney(title = journeyText) },
+                onClick = {
+                    viewModel.startJourney(
+                        title = journeyText,
+                        onComplete = { summary -> mainViewModel.addNewToList(summary = summary) },
+                    )
+                },
                 enabled = !isTracking
             ) {
                 Text(text = "Start Journey")
