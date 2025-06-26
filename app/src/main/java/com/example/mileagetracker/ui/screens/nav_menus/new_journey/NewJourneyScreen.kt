@@ -1,4 +1,4 @@
-package com.example.mileagetracker.ui.screens.nav_menus.home
+package com.example.mileagetracker.ui.screens.nav_menus.new_journey
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -25,7 +25,7 @@ import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 
 @Composable
-fun HomeScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
+fun NewJourneyScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var journeyText by rememberSaveable { mutableStateOf("") }
 
@@ -82,12 +82,12 @@ fun HomeScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
 
 @VerticalScreenPreview
 @Composable
-fun TrackerScreenVertical() {
-    HomeScreen(onStart = {})
+fun NewJourneyScreenVertical() {
+    NewJourneyScreen(onStart = {})
 }
 
 @HorizontalScreenPreview
 @Composable
-fun TrackerScreenHorizontal() {
-    HomeScreen(onStart = {})
+fun NewJourneyScreenHorizontal() {
+    NewJourneyScreen(onStart = {})
 }

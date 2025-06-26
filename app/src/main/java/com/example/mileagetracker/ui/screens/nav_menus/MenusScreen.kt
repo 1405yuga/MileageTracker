@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.AddLocationAlt
+import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.R
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.ui.screens.main.MainViewModel
-import com.example.mileagetracker.ui.screens.nav_menus.history.HistoryScreen
-import com.example.mileagetracker.ui.screens.nav_menus.home.HomeScreen
+import com.example.mileagetracker.ui.screens.nav_menus.new_journey.NewJourneyScreen
+import com.example.mileagetracker.ui.screens.nav_menus.past.PastJourneysScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,8 +49,8 @@ fun MenusScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val menuItems = listOf(NavMenusScreen.Home, NavMenusScreen.History)
-    var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.Home) }
+    val menuItems = listOf(NavMenusScreen.NewJourney, NavMenusScreen.PastJourneys)
+    var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.NewJourney) }
     val summaryList by mainViewModel.summaryList.collectAsState()
 
     ModalNavigationDrawer(
@@ -69,7 +69,7 @@ fun MenusScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 menuItems.forEach { item ->
                     NavigationDrawerItem(
-                        label = { Text(item.name) },
+                        label = { Text(item.label) },
                         selected = item == selectedMenu,
                         onClick = {
                             selectedMenu = item
@@ -82,7 +82,7 @@ fun MenusScreen(
         }) {
         Scaffold(topBar = {
             TopAppBar(
-                title = { Text(selectedMenu.name) },
+                title = { Text(selectedMenu.label) },
                 navigationIcon = {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(selectedMenu.icon, contentDescription = "Menu")
@@ -91,12 +91,12 @@ fun MenusScreen(
         }) { padding ->
             Box(modifier = modifier.padding(padding)) {
                 when (selectedMenu) {
-                    NavMenusScreen.Home -> {
-                        HomeScreen(onStart = { onStart(it) }, modifier = modifier)
+                    NavMenusScreen.NewJourney -> {
+                        NewJourneyScreen(onStart = { onStart(it) }, modifier = modifier)
                     }
 
-                    NavMenusScreen.History -> {
-                        HistoryScreen(
+                    NavMenusScreen.PastJourneys -> {
+                        PastJourneysScreen(
                             modifier = modifier,
                             summaryList = summaryList,
                             onItemClick = { goToSummaryScreen(it) }
@@ -104,12 +104,14 @@ fun MenusScreen(
                     }
                 }
             }
-
         }
     }
-
 }
 
-enum class NavMenusScreen(val icon: ImageVector) {
-    Home(icon = Icons.Default.Star), History(icon = Icons.Default.Refresh),
+enum class NavMenusScreen(val label: String, val icon: ImageVector) {
+    NewJourney(
+        label = "New Journey",
+        icon = Icons.Outlined.AddLocationAlt
+    ),
+    PastJourneys(label = "Past Journeys", icon = Icons.Outlined.Map),
 }

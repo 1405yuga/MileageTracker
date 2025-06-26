@@ -1,4 +1,4 @@
-package com.example.mileagetracker.ui.screens.nav_menus.history
+package com.example.mileagetracker.ui.screens.nav_menus.past
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +32,7 @@ import com.example.mileagetracker.utils.extension_functions.toFormattedDistanceI
 import com.example.mileagetracker.utils.extension_functions.toFormattedTimeString
 
 @Composable
-fun HistoryScreen(
+fun PastJourneysScreen(
     summaryList: List<Summary>,
     onItemClick: (Summary) -> Unit,
     modifier: Modifier = Modifier
@@ -52,14 +52,14 @@ fun HistoryScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(summaryList) { summary ->
-                HistoryItem(summary = summary, onItemClick = { onItemClick(it) })
+                PastJourneyItem(summary = summary, onItemClick = { onItemClick(it) })
             }
         }
     }
 }
 
 @Composable
-fun HistoryItem(summary: Summary, onItemClick: (Summary) -> Unit) {
+fun PastJourneyItem(summary: Summary, onItemClick: (Summary) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -101,7 +101,7 @@ fun HistoryItem(summary: Summary, onItemClick: (Summary) -> Unit) {
 
 @Composable
 @VerticalScreenPreview
-fun HistoryVerticalPreview() {
-    HistoryScreen(
+fun PastJourneysVerticalPreview() {
+    PastJourneysScreen(
         summaryList = List(5) { Summary.mock }, onItemClick = {})
 }
