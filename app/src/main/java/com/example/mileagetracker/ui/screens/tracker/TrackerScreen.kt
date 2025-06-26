@@ -35,8 +35,9 @@ fun TrackerScreen(
             }
 
             Button(onClick = {
-                viewModel.stopJourney(title = journeyText)
-                goToSummaryScreen(viewModel.summary)
+                viewModel.stopJourney(title = journeyText, onComplete = { summary ->
+                    goToSummaryScreen(viewModel.summary)
+                })
             }, enabled = isTracking) {
                 Text(text = "Stop Journey")
             }

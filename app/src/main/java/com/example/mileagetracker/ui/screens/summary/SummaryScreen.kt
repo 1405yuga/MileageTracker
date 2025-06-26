@@ -65,7 +65,7 @@ fun SummaryScreen(summary: Summary?, modifier: Modifier = Modifier) {
             ) {
                 Text("Start Time: ${summary.startTime.toFormattedTimeString()}")
                 Text("End Time: ${summary.endTime.toFormattedTimeString()}")
-                Text("Total Distance: ${summary.distanceInMeters} km")
+                Text("Total Distance: ${summary.distanceInMeters} m")
                 Text("Total Points: ${summary.points.size}")
             }
         } else {

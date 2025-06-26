@@ -12,7 +12,7 @@ class PointsRepository @Inject constructor(private val pointsDao: PointsDao) {
         return pointsDao.insertPointData(point = point)
     }
 
-    suspend fun getPointsFromJourney(journeyId: Long): Flow<List<PointsData>> {
+    fun getPointsFromJourney(journeyId: Long): Flow<List<PointsData>> {
         return pointsDao.getPointsFromJourney(journeyId = journeyId)
     }
 }

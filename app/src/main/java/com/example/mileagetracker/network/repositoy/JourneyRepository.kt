@@ -7,8 +7,18 @@ import javax.inject.Singleton
 
 @Singleton
 class JourneyRepository @Inject constructor(private val journeyDao: JourneyDao) {
-    suspend fun insertJourney(journey: JourneyData): Long {
-        return journeyDao.insertJourney(journey = journey)
+    suspend fun insertJourney(
+        journey: JourneyData,
+        onSuccess: (id: Long) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        try {
+            val id = journeyDao.insertJourney(journey = journey)
+            onSuccess(id)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onFailure(e)
+        }
     }
 
     suspend fun getAllJourneys(): List<JourneyData> {

@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mileagetracker.data.JourneyData
+import com.example.mileagetracker.data.PointsData
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
@@ -88,9 +89,23 @@ class TrackerViewModel @Inject constructor(
     }
 
     fun onNewLocation(location: Location) {
-        val updated = _localPoints.value.toMutableList()
-        updated.add(LatLng(location.latitude, location.longitude))
-        _localPoints.value = updated
+        if (journeyId != null) {
+            viewModelScope.launch {
+                val updated = _localPoints.value.toMutableList()
+                pointsRepository.insertPointData(
+                    point = PointsData(
+                        journeyId = journeyId!!,
+                        latitude = location.latitude,
+                        longitude = location.longitude
+                    )
+                )
+                updated.add(LatLng(location.latitude, location.longitude))
+                _localPoints.value = updated
+            }
+        } else {
+            Log.d(this.javaClass.simpleName, "Journey id null")
+            // TODO: give error
+        }
     }
 
     fun calculateDistance(): Float {
@@ -115,16 +130,17 @@ class TrackerViewModel @Inject constructor(
 
     fun addJourney(title: String, startTime: Long) {
         viewModelScope.launch {
-            try {
-                journeyRepository.insertJourney(
-                    journey = JourneyData(
-                        title = title,
-                        startTime = startTime
-                    )
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            journeyRepository.insertJourney(
+                journey = JourneyData(
+                    title = title,
+                    startTime = startTime
+                ),
+                onSuccess = { id ->
+                    // TODO: add in static list
+                    journeyId = id
+                },
+                onFailure = {}
+            )
         }
     }
 
