@@ -7,6 +7,10 @@ import javax.inject.Singleton
 
 @Singleton
 class PointsRepository @Inject constructor(private val pointsDao: PointsDao) {
+    companion object {
+        val mock = PointsRepository(PointsDao.mock)
+    }
+
     suspend fun insertPointData(point: PointsData): Long {
         return pointsDao.insertPointData(point = point)
     }

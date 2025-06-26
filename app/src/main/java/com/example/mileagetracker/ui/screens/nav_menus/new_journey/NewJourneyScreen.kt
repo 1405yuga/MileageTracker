@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
@@ -48,37 +52,49 @@ fun NewJourneyScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
         }
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "Start New Journey",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 24.dp)
+        )
+
         OutlinedTextField(
             value = journeyText,
-            onValueChange = {
-                journeyText = it
-            },
-            modifier = Modifier.fillMaxWidth(),
-            maxLines = 1,
-            label = { Text("Journey Name") }
+            onValueChange = { journeyText = it },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            singleLine = true,
+            label = { Text("Journey Name") },
+            placeholder = { Text("e.g. Morning Walk") }
         )
-        Button(onClick = {
-            val allGranted = permissionsToRequest.all {
-                ContextCompat.checkSelfPermission(
-                    context,
-                    it
-                ) == PackageManager.PERMISSION_GRANTED
-            }
 
-            if (allGranted) {
-                onStart(journeyText.trim())
-            } else {
-                permissionLauncher.launch(permissionsToRequest.toTypedArray())
-            }
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Get Started")
+        Button(
+            onClick = {
+                val allGranted = permissionsToRequest.all {
+                    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                }
+
+                if (allGranted) {
+                    onStart(journeyText.trim())
+                } else {
+                    permissionLauncher.launch(permissionsToRequest.toTypedArray())
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            enabled = journeyText.trim().isNotEmpty()
+        ) {
+            Text("Get Started")
         }
-    }
-}
+    }}
 
 @VerticalScreenPreview
 @Composable

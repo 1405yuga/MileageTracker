@@ -7,6 +7,10 @@ import javax.inject.Singleton
 
 @Singleton
 class JourneyRepository @Inject constructor(private val journeyDao: JourneyDao) {
+    companion object {
+        val mock: JourneyRepository = JourneyRepository(JourneyDao.mock)
+    }
+
     suspend fun insertJourney(
         journey: JourneyData,
         onSuccess: (id: Long) -> Unit,

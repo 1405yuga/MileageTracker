@@ -1,18 +1,36 @@
 package com.example.mileagetracker.ui.screens.tracker
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.data.Summary
+import com.example.mileagetracker.network.repositoy.JourneyRepository
+import com.example.mileagetracker.network.repositoy.PointsRepository
 import com.example.mileagetracker.ui.screens.main.MainViewModel
+import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 import com.example.mileagetracker.utils.helper.MapScreen
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
@@ -42,43 +60,96 @@ fun TrackerScreen(
             }
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        Text(journeyText, fontWeight = FontWeight.Bold)
-        Text(text = "Local points : $localPoints")
-        Row {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        ) {
+            MapScreen(points = localPoints)
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = journeyText,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+
+            Text(
+                text = "Tracking ${localPoints.size} points",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Button(
                 onClick = {
                     viewModel.startJourney(
                         title = journeyText,
-                        onComplete = { summary -> mainViewModel.addNewToList(summary = summary) },
+                        onComplete = { summary -> mainViewModel.addNewToList(summary) }
                     )
                 },
-                enabled = !isTracking
+                enabled = !isTracking,
+                modifier = Modifier.weight(1f)
             ) {
-                Text(text = "Start Journey")
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Start",
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text("Start")
             }
 
-            Button(onClick = {
-                viewModel.stopJourney(title = journeyText, onComplete = { summary ->
-                    mainViewModel.updateEndTime(
-                        summaryId = summary.id,
-                        endTime = summary.endTime
-                    )
-                    goToSummaryScreen(summary)
-                })
-            }, enabled = isTracking) {
-                Text(text = "Stop Journey")
+            Button(
+                onClick = {
+                    viewModel.stopJourney(title = journeyText) { summary ->
+                        mainViewModel.updateEndTime(summary.id, summary.endTime)
+                        goToSummaryScreen(summary)
+                    }
+                },
+                enabled = isTracking,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Stop,
+                    contentDescription = "Stop",
+                    modifier = Modifier.padding(end = 4.dp)
+                )
+                Text("Stop")
             }
         }
-        MapScreen(points = localPoints)
     }
 }
 
 //@Composable
 //@VerticalScreenPreview
-//fun TrackerScreenVertical(){
+//fun TrackerScreenVertical() {
+//    val context = LocalContext.current
+//
 //    TrackerScreen(
 //        journeyText = "Untitle journey",
-//        viewModel = TrackerViewModel(),
+//        viewModel = TrackerViewModel(
+//            context = context,
+//            journeyRepository = JourneyRepository.mock,
+//            pointsRepository = PointsRepository.mock
+//        ),
+//        mainViewModel = MainViewModel(
+//            journeyRepository = JourneyRepository.mock,
+//            pointsRepository = PointsRepository.mock
+//        ),
+//        goToSummaryScreen = {},
 //    )
 //}

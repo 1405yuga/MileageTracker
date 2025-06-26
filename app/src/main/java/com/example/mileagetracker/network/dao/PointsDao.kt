@@ -8,6 +8,16 @@ import com.example.mileagetracker.data.PointsData
 
 @Dao
 interface PointsDao {
+    companion object {
+        val mock = object : PointsDao {
+            override suspend fun insertPointData(point: PointsData): Long = 0L
+
+            override suspend fun getPointsFromJourney(journeyId: Long): List<PointsData> =
+                emptyList()
+
+        }
+    }
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPointData(point: PointsData): Long
 

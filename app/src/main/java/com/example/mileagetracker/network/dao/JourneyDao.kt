@@ -20,4 +20,15 @@ interface JourneyDao {
     @Query("UPDATE ${JourneyData.TABLE_NAME} SET ${JourneyData.COLUMN_END_TIME} = :endTime WHERE id = :id")
     suspend fun updateEndTime(id: Long, endTime: Long)
 
+    companion object{
+        val mock : JourneyDao = object : JourneyDao{
+            override suspend fun insertJourney(journey: JourneyData): Long = 0L
+
+            override suspend fun getAllJourneys(): List<JourneyData> = emptyList()
+
+            override suspend fun deleteJourneyById(id: Long): Int = 0
+
+            override suspend fun updateEndTime(id: Long, endTime: Long) {}
+        }
+    }
 }
