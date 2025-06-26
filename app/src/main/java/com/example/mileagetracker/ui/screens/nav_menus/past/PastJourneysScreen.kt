@@ -34,7 +34,7 @@ import com.example.mileagetracker.utils.extension_functions.toFormattedTimeStrin
 @Composable
 fun PastJourneysScreen(
     summaryList: List<Summary>,
-    onItemClick: (Summary) -> Unit,
+    onItemClick: (summaryId: Long?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (summaryList.isEmpty()) {
@@ -59,12 +59,12 @@ fun PastJourneysScreen(
 }
 
 @Composable
-fun PastJourneyItem(summary: Summary, onItemClick: (Summary) -> Unit) {
+fun PastJourneyItem(summary: Summary, onItemClick: (summaryId: Long?) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp),
-        onClick = { onItemClick(summary) }
+        onClick = { onItemClick(summary.id) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(

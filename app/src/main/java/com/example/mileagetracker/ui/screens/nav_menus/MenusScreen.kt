@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MenusScreen(
     onStart: (journeyTitle: String) -> Unit,
-    goToSummaryScreen: (summary: Summary) -> Unit,
+    goToSummaryScreen: (summaryId: Long?) -> Unit,
     mainViewModel: MainViewModel,
     modifier: Modifier = Modifier
 ) {

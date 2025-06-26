@@ -12,7 +12,6 @@ import com.example.mileagetracker.data.PointsData
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
-import com.example.mileagetracker.utils.helper.HelperFunctions
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +36,6 @@ class TrackerViewModel @Inject constructor(
 
     private var startTime: Long = 0L
     private var endTime: Long = 0L
-    lateinit var summary: Summary
     private var journeyId: Long? = null
 
     private var elapsedJob: Job? = null
@@ -60,25 +58,17 @@ class TrackerViewModel @Inject constructor(
         })
     }
 
-    fun stopJourney(title: String, onComplete: (Summary) -> Unit) {
+    fun stopJourney(onComplete: (summaryId: Long, endTime: Long) -> Unit) {
         viewModelScope.launch {
             if (journeyId != null) {
                 endTime = System.currentTimeMillis()
                 journeyRepository.updateEndTime(journeyId = journeyId!!, endTime = endTime)
-                summary = Summary(
-                    id = journeyId!!,
-                    title = title,
-                    points = _localPoints.value,
-                    distanceInMeters = HelperFunctions.calculateDistance(pointsList = _localPoints.value),
-                    startTime = startTime,
-                    endTime = endTime
-                )
                 stopForegroundService()
                 _isTracking.value = false
                 _localPoints.value = emptyList()
                 elapsedJob?.cancel()
                 elapsedJob = null
-                onComplete(summary)
+                onComplete(journeyId!!, endTime)
             } else {
                 Log.d(this.javaClass.simpleName, "Journey id null")
                 // TODO: give error
@@ -127,7 +117,6 @@ class TrackerViewModel @Inject constructor(
                     startTime = startTime
                 ),
                 onSuccess = { id ->
-                    // TODO: add in static list
                     journeyId = id
                     onSuccess(id)
                 },

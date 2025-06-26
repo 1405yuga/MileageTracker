@@ -23,14 +23,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.mileagetracker.data.Summary
-import com.example.mileagetracker.network.repositoy.JourneyRepository
-import com.example.mileagetracker.network.repositoy.PointsRepository
 import com.example.mileagetracker.ui.screens.main.MainViewModel
-import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 import com.example.mileagetracker.utils.helper.MapScreen
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
@@ -42,7 +37,7 @@ fun TrackerScreen(
     journeyText: String,
     viewModel: TrackerViewModel,
     mainViewModel: MainViewModel,
-    goToSummaryScreen: (summary: Summary) -> Unit,
+    goToSummaryScreen: (summaryId: Long?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val localPoints by viewModel.localPoints.collectAsState()
@@ -115,9 +110,9 @@ fun TrackerScreen(
 
             Button(
                 onClick = {
-                    viewModel.stopJourney(title = journeyText) { summary ->
-                        mainViewModel.updateEndTime(summary.id, summary.endTime)
-                        goToSummaryScreen(summary)
+                    viewModel.stopJourney { summaryId, endTime ->
+                        mainViewModel.updateEndTime(summaryId, endTime)
+                        goToSummaryScreen(summaryId)
                     }
                 },
                 enabled = isTracking,

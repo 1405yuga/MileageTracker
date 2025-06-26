@@ -19,11 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.ui.screens.nav_menus.MenusScreen
 import com.example.mileagetracker.ui.screens.summary.SummaryScreen
 import com.example.mileagetracker.ui.screens.tracker.TrackerScreen
@@ -31,7 +31,6 @@ import com.example.mileagetracker.ui.theme.MileageTrackerTheme
 import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 import com.example.mileagetracker.utils.screen_state.ScreenState
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,6 +54,7 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val viewModel: MainViewModel = hiltViewModel()
     val screenState by viewModel.screenState.collectAsState()
+    val summaryList by viewModel.summaryList.collectAsState()
 
     when (val state = screenState) {
         is ScreenState.Error -> {
@@ -85,9 +85,8 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
                             navController.navigate("${Screen.Tracker.name}/$journeyName")
                         },
                         modifier = modifier,
-                        goToSummaryScreen = { summary ->
-                            val summaryString = Gson().toJson(summary)
-                            navController.navigate("${Screen.Summary.name}/$summaryString")
+                        goToSummaryScreen = { summaryId ->
+                            navController.navigate("${Screen.Summary.name}/$summaryId")
                         },
                         mainViewModel = viewModel,
                     )
@@ -106,9 +105,8 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
                     TrackerScreen(
                         journeyText = journeyText,
                         viewModel = hiltViewModel(),
-                        goToSummaryScreen = { summary ->
-                            val summaryString = Gson().toJson(summary)
-                            navController.navigate("${Screen.Summary.name}/$summaryString")
+                        goToSummaryScreen = { summaryId ->
+                            navController.navigate("${Screen.Summary.name}/$summaryId")
                         },
                         mainViewModel = viewModel,
                         modifier = modifier
@@ -116,17 +114,14 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
                 }
 
                 composable(
-                    route = "${Screen.Summary.name}/{summaryJson}",
-                    arguments = listOf(
-                        navArgument(
-                            "summaryJson"
-                        ) {})
+                    route = "${Screen.Summary.name}/{summaryId}",
+                    arguments = listOf(navArgument("summaryId") { type = NavType.LongType })
                 ) { backStackEntry ->
-                    val summary: Summary? = Gson().fromJson(
-                        backStackEntry.arguments?.getString("summaryJson"),
-                        Summary::class.java
+                    val summaryId: Long? = backStackEntry.arguments?.getLong("summaryId")
+                    SummaryScreen(
+                        summary = summaryList.find { it.id == summaryId },
+                        modifier = modifier
                     )
-                    SummaryScreen(summary = summary, modifier = modifier)
                 }
             }
         }
