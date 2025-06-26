@@ -45,13 +45,15 @@ class MainViewModel @Inject constructor(
         _summaryList.value = updated
     }
 
-    fun updateEndTime(summaryId: Long, endTime: Long) {
+    fun updateEndTime(summaryId: Long, endTime: Long?) {
         val updated = _summaryList.value.map { summary ->
-            if (summary.id == summaryId) summary.copy(endTime = endTime)
+            if (summary.id == summaryId) summary.copy(
+                endTime = endTime,
+                distanceInMeters = HelperFunctions.calculateDistance(summary.points)
+            )
             else summary
         }
         _summaryList.value = updated
-
     }
 
     fun loadAllSummary() {

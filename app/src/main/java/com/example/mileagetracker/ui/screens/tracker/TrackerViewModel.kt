@@ -14,15 +14,12 @@ import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
 import com.example.mileagetracker.utils.helper.HelperFunctions
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
-import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -101,7 +98,7 @@ class TrackerViewModel @Inject constructor(
         ContextCompat.startForegroundService(context, intent)
     }
 
-    fun onNewLocation(location: Location) {
+    fun onNewLocation(location: Location, onSuccess: (Long) -> Unit) {
         if (journeyId != null) {
             viewModelScope.launch {
                 val updated = _localPoints.value.toMutableList()
@@ -114,6 +111,7 @@ class TrackerViewModel @Inject constructor(
                 )
                 updated.add(LatLng(location.latitude, location.longitude))
                 _localPoints.value = updated
+                onSuccess(journeyId!!)
             }
         } else {
             Log.d(this.javaClass.simpleName, "Journey id null")
@@ -135,16 +133,6 @@ class TrackerViewModel @Inject constructor(
                 },
                 onFailure = {}
             )
-        }
-    }
-
-    init {
-        viewModelScope.launch {
-            LocationDataManager.location
-                .filterNotNull()
-                .collectLatest { location ->
-                    onNewLocation(location)
-                }
         }
     }
 }
