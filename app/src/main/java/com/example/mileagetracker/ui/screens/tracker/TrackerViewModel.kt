@@ -37,8 +37,6 @@ class TrackerViewModel @Inject constructor(
     private var startTime: Long = 0L
     private var endTime: Long = 0L
     lateinit var summary: Summary
-    private val _elapsedTime = MutableStateFlow(0L)
-    val elapsedTime: StateFlow<Long> = _elapsedTime
 
     private var elapsedJob: Job? = null
 
@@ -46,7 +44,6 @@ class TrackerViewModel @Inject constructor(
         startTime = System.currentTimeMillis()
         _isTracking.value = true
         startForegroundService()
-        startElapsedCounter()
         addJourney(title = title, startTime)
     }
 
@@ -64,7 +61,6 @@ class TrackerViewModel @Inject constructor(
         _localPoints.value = emptyList()
         elapsedJob?.cancel()
         elapsedJob = null
-        _elapsedTime.value = 0L
     }
 
     private fun startForegroundService() {
@@ -77,15 +73,6 @@ class TrackerViewModel @Inject constructor(
         val intent = Intent(context, ForegroundTrackingService::class.java)
         intent.action = "ACTION_STOP"
         ContextCompat.startForegroundService(context, intent)
-    }
-
-    private fun startElapsedCounter() {
-        elapsedJob = viewModelScope.launch {
-            while (_isTracking.value) {
-                delay(1000L)
-                _elapsedTime.value = (System.currentTimeMillis() - startTime)
-            }
-        }
     }
 
     fun onNewLocation(location: Location) {

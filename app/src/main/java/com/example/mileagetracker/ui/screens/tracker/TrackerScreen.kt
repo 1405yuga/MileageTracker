@@ -20,7 +20,6 @@ fun TrackerScreen(
     goToSummaryScreen: (summary: Summary) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val elapsedTime by viewModel.elapsedTime.collectAsState()
     val localPoints by viewModel.localPoints.collectAsState()
     val isTracking by viewModel.isTracking.collectAsState()
 
