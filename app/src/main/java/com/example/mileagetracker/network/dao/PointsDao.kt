@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.mileagetracker.data.PointsData
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PointsDao {
@@ -13,5 +12,5 @@ interface PointsDao {
     suspend fun insertPointData(point: PointsData): Long
 
     @Query("SELECT * FROM ${PointsData.TABLE_NAME} WHERE ${PointsData.COLUMN_JOURNEY_ID} = :journeyId")
-    fun getPointsFromJourney(journeyId: Long): Flow<List<PointsData>>
+    suspend fun getPointsFromJourney(journeyId: Long): List<PointsData>
 }
