@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,17 +33,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.R
+import com.example.mileagetracker.data.Summary
+import com.example.mileagetracker.ui.screens.main.MainViewModel
 import com.example.mileagetracker.ui.screens.nav_menus.history.HistoryScreen
 import com.example.mileagetracker.ui.screens.nav_menus.home.HomeScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NavMenusScreen(onStart: (journeyTitle: String) -> Unit, modifier: Modifier = Modifier) {
+fun MenusScreen(
+    onStart: (journeyTitle: String) -> Unit,
+    goToSummaryScreen: (summary: Summary) -> Unit,
+    mainViewModel: MainViewModel,
+    modifier: Modifier = Modifier
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val menuItems = listOf(NavMenusScreen.Home, NavMenusScreen.History)
     var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.Home) }
+    val summaryList by mainViewModel.summaryList.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -87,7 +96,11 @@ fun NavMenusScreen(onStart: (journeyTitle: String) -> Unit, modifier: Modifier =
                     }
 
                     NavMenusScreen.History -> {
-                        HistoryScreen(modifier = modifier)
+                        HistoryScreen(
+                            modifier = modifier,
+                            summaryList = summaryList,
+                            onItemClick = { goToSummaryScreen(it) }
+                        )
                     }
                 }
             }

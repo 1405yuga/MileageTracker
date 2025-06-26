@@ -30,6 +30,7 @@ class MainViewModel @Inject constructor(
     init {
         loadAllSummary()
     }
+
     fun loadAllSummary() {
         _screenState.value = ScreenState.Loading()
         viewModelScope.launch {
@@ -54,6 +55,7 @@ class MainViewModel @Inject constructor(
 
                     deferredSummaries.awaitAll()
                 }
+                _summaryList.value = result
                 _screenState.value = ScreenState.Loaded(result = result)
             } catch (e: Exception) {
                 e.printStackTrace()

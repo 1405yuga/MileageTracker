@@ -24,7 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mileagetracker.data.Summary
-import com.example.mileagetracker.ui.screens.nav_menus.NavMenusScreen
+import com.example.mileagetracker.ui.screens.nav_menus.MenusScreen
 import com.example.mileagetracker.ui.screens.summary.SummaryScreen
 import com.example.mileagetracker.ui.screens.tracker.TrackerScreen
 import com.example.mileagetracker.ui.theme.MileageTrackerTheme
@@ -77,14 +77,19 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
             NavHost(
                 navController = navController,
                 startDestination = Screen.NavMenu.name,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
             ) {
                 composable(Screen.NavMenu.name) {
-                    NavMenusScreen(
+                    MenusScreen(
                         onStart = { journeyName ->
                             navController.navigate("${Screen.Tracker.name}/$journeyName")
                         },
-                        modifier = modifier
+                        modifier = modifier,
+                        goToSummaryScreen = { summary ->
+                            val summaryString = Gson().toJson(summary)
+                            navController.navigate("${Screen.Summary.name}/$summaryString")
+                        },
+                        mainViewModel = viewModel,
                     )
                 }
 
