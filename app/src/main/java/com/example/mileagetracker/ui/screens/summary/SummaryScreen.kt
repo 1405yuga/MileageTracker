@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
-import com.example.mileagetracker.utils.composable.MapScreen
 import com.example.mileagetracker.utils.extension_functions.toFormattedTimeString
+import com.example.mileagetracker.utils.helper.MapScreen
 
 @Composable
 fun SummaryScreen(summary: Summary?, modifier: Modifier = Modifier) {
@@ -64,7 +64,7 @@ fun SummaryScreen(summary: Summary?, modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text("Start Time: ${summary.startTime.toFormattedTimeString()}")
-                Text("End Time: ${summary.endTime.toFormattedTimeString()}")
+                summary.endTime?.let { Text("End Time: ${summary.endTime.toFormattedTimeString()}") }
                 Text("Total Distance: ${summary.distanceInMeters} m")
                 Text("Total Points: ${summary.points.size}")
             }

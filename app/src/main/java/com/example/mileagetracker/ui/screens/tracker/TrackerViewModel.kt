@@ -57,6 +57,7 @@ class TrackerViewModel @Inject constructor(
                 endTime = System.currentTimeMillis()
                 journeyRepository.updateEndTime(journeyId = journeyId!!, endTime = endTime)
                 summary = Summary(
+                    id = journeyId!!,
                     title = title,
                     points = _localPoints.value,
                     distanceInMeters = calculateDistance(),

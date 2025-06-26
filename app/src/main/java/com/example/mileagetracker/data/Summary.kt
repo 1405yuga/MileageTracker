@@ -3,14 +3,16 @@ package com.example.mileagetracker.data
 import com.google.android.gms.maps.model.LatLng
 
 data class Summary(
+    val id: Long,
     val title: String,
     val points: List<LatLng>,
     val distanceInMeters: Float,
     val startTime: Long,
-    val endTime: Long
+    val endTime: Long?
 ) {
     companion object {
         val mock = Summary(
+            id = 100L,
             title = "Untitled title",
             points = listOf(
                 LatLng(19.0760, 72.8777),
