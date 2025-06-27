@@ -2,9 +2,11 @@ package com.example.mileagetracker.ui.screens.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mileagetracker.data.CurrentJourney
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
+import com.example.mileagetracker.network.shared_prefs.CurrentJourneyPrefsManager
 import com.example.mileagetracker.utils.helper.HelperFunctions
 import com.example.mileagetracker.utils.screen_state.ScreenState
 import com.google.android.gms.maps.model.LatLng
@@ -19,7 +21,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val journeyRepository: JourneyRepository, private val pointsRepository: PointsRepository
+    private val journeyRepository: JourneyRepository,
+    private val pointsRepository: PointsRepository,
+    private val currentJourneyPrefsManager: CurrentJourneyPrefsManager
 ) : ViewModel() {
     private val _summaryList = MutableStateFlow<List<Summary>>(emptyList())
     val summaryList: StateFlow<List<Summary>> = _summaryList
@@ -54,6 +58,10 @@ class MainViewModel @Inject constructor(
             else summary
         }
         _summaryList.value = updated
+    }
+
+    fun getCurrentJourneyData(): CurrentJourney? {
+        return currentJourneyPrefsManager.getJourney()
     }
 
     fun loadAllSummary() {

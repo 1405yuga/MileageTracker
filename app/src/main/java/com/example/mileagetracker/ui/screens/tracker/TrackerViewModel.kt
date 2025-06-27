@@ -9,16 +9,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mileagetracker.data.CurrentJourney
 import com.example.mileagetracker.data.JourneyData
-import com.example.mileagetracker.data.PointsData
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
 import com.example.mileagetracker.network.shared_prefs.CurrentJourneyPrefsManager
+import com.example.mileagetracker.utils.screen_state.ScreenState
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,6 +32,10 @@ class TrackerViewModel @Inject constructor(
     private val pointsRepository: PointsRepository,
     private val currentJourneyPrefsManager: CurrentJourneyPrefsManager
 ) : ViewModel() {
+
+    private val _screenState = MutableStateFlow<ScreenState<Unit>>(ScreenState.PreLoad())
+    val screenState: StateFlow<ScreenState<Unit>> = _screenState
+
     private val _localPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val localPoints: StateFlow<List<LatLng>> = _localPoints
 
@@ -44,6 +49,7 @@ class TrackerViewModel @Inject constructor(
     private var elapsedJob: Job? = null
 
     fun startJourney(title: String, onComplete: (Summary) -> Unit) {
+        if (journeyId != null) return
         startTime = System.currentTimeMillis()
         _isTracking.value = true
         startForegroundService()
@@ -134,6 +140,40 @@ class TrackerViewModel @Inject constructor(
                 },
                 onFailure = {}
             )
+        }
+    }
+
+    init {
+        restoreData()
+    }
+
+    fun restoreData() {
+        _screenState.value = ScreenState.Loading()
+        _screenState.value = try {
+            val currentJourney = currentJourneyPrefsManager.getJourney()
+            Log.d(this.javaClass.simpleName, "Cuurent : $currentJourney")
+            currentJourney?.id?.let { id ->
+                viewModelScope.launch {
+                    journeyId = id
+//                val journeyData = journeyRepository.getJourneyById(id)
+                    val pointsData = async { pointsRepository.getPointsFromJourney(id) }
+                    Log.d(this.javaClass.simpleName, "points : ${pointsData.await().size}")
+
+                    _isTracking.value = currentJourney.isActive
+                    _localPoints.value = pointsData.await().map { pointsData ->
+                        LatLng(
+                            pointsData.latitude,
+                            pointsData.longitude
+                        )
+                    }
+                    startTime = currentJourney.startTime
+                    if (currentJourney.isActive) startForegroundService()
+                }
+            }
+            ScreenState.Loaded(result = Unit)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ScreenState.Error("Unable to restore journey !")
         }
     }
 }

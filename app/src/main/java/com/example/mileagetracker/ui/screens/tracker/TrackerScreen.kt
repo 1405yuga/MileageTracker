@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.ui.screens.main.MainViewModel
 import com.example.mileagetracker.utils.helper.MapScreen
+import com.example.mileagetracker.utils.screen_state.ScreenState
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.collectLatest
@@ -42,6 +44,8 @@ fun TrackerScreen(
 ) {
     val localPoints by viewModel.localPoints.collectAsState()
     val isTracking by viewModel.isTracking.collectAsState()
+    val screenState by viewModel.screenState.collectAsState()
+
     LaunchedEffect(Unit) {
         LocationDataManager.location
             .filterNotNull()
@@ -54,78 +58,92 @@ fun TrackerScreen(
                 })
             }
     }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Card(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-        ) {
-            MapScreen(points = localPoints)
+    when (val state = screenState) {
+        is ScreenState.Error -> {
+            Text(state.message ?: "Something went wrong")
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                text = journeyText,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
 
-            Text(
-                text = "Tracking ${localPoints.size} points",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = {
-                    viewModel.startJourney(
-                        title = journeyText,
-                        onComplete = { summary -> mainViewModel.addNewToList(summary) }
+        is ScreenState.Loaded -> {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    MapScreen(points = localPoints)
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = journeyText,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 4.dp)
                     )
-                },
-                enabled = !isTracking,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Start",
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Text("Start")
+
+                    Text(
+                        text = "Tracking ${localPoints.size} points",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.startJourney(
+                                title = journeyText,
+                                onComplete = { summary -> mainViewModel.addNewToList(summary) }
+                            )
+                        },
+                        enabled = !isTracking,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Start",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text("Start")
+                    }
+
+                    Button(
+                        onClick = {
+                            viewModel.stopJourney { summaryId, endTime ->
+                                mainViewModel.updateEndTime(summaryId, endTime)
+                                goToSummaryScreen(summaryId)
+                            }
+                        },
+                        enabled = isTracking,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Stop,
+                            contentDescription = "Stop",
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                        Text("Stop")
+                    }
+                }
             }
 
-            Button(
-                onClick = {
-                    viewModel.stopJourney { summaryId, endTime ->
-                        mainViewModel.updateEndTime(summaryId, endTime)
-                        goToSummaryScreen(summaryId)
-                    }
-                },
-                enabled = isTracking,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Stop,
-                    contentDescription = "Stop",
-                    modifier = Modifier.padding(end = 4.dp)
-                )
-                Text("Stop")
-            }
         }
+
+        is ScreenState.Loading -> {
+            CircularProgressIndicator()
+        }
+
+        is ScreenState.PreLoad -> {}
     }
 }
 

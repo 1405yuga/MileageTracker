@@ -25,5 +25,11 @@ data class JourneyData(
         const val COLUMN_TITLE = "title"
         const val COLUMN_START_TIME = "start_time"
         const val COLUMN_END_TIME = "end_time"
+        val mock = JourneyData(
+            id = 0L,
+            title = "Mocked journey",
+            startTime = 100L,
+            endTime = 500L
+        )
     }
 }

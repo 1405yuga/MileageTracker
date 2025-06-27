@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +31,7 @@ import com.example.mileagetracker.ui.screens.tracker.TrackerScreen
 import com.example.mileagetracker.ui.theme.MileageTrackerTheme
 import com.example.mileagetracker.utils.annotations.HorizontalScreenPreview
 import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
+import com.example.mileagetracker.utils.notification.NotificationHelper
 import com.example.mileagetracker.utils.screen_state.ScreenState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,10 +40,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 //        enableEdgeToEdge()
+        val navigateTo = intent?.getStringExtra(NotificationHelper.PENDING_ACTIVITY_KEY)
         setContent {
             MileageTrackerTheme {
                 Surface {
-                    MileageTrackerApp()
+                    MileageTrackerApp(pendingIntentString = navigateTo)
                 }
             }
         }
@@ -50,7 +53,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MileageTrackerApp(modifier: Modifier = Modifier) {
+fun MileageTrackerApp(pendingIntentString: String?, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val viewModel: MainViewModel = hiltViewModel()
     val screenState by viewModel.screenState.collectAsState()
@@ -74,6 +77,12 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
         }
 
         is ScreenState.Loaded -> {
+            LaunchedEffect(pendingIntentString) {
+                if (pendingIntentString == Screen.Tracker.name) {
+                    val journeyName = viewModel.getCurrentJourneyData()?.title
+                    navController.navigate("${Screen.Tracker.name}/${journeyName}")
+                }
+            }
             NavHost(
                 navController = navController,
                 startDestination = Screen.NavMenu.name,
@@ -146,13 +155,13 @@ fun MileageTrackerApp(modifier: Modifier = Modifier) {
 @VerticalScreenPreview
 @Composable
 fun MileageTrackerVertical() {
-    MileageTrackerApp()
+    MileageTrackerApp(pendingIntentString = Screen.Tracker.name)
 }
 
 @HorizontalScreenPreview
 @Composable
 fun MileageTrackerHorizontal() {
-    MileageTrackerApp()
+    MileageTrackerApp(pendingIntentString = Screen.Tracker.name)
 }
 
 enum class Screen {
