@@ -104,13 +104,13 @@ class TrackerViewModel @Inject constructor(
         if (journeyId != null) {
             viewModelScope.launch {
                 val updated = _localPoints.value.toMutableList()
-                pointsRepository.insertPointData(
-                    point = PointsData(
-                        journeyId = journeyId!!,
-                        latitude = location.latitude,
-                        longitude = location.longitude
-                    )
-                )
+//                pointsRepository.insertPointData(
+//                    point = PointsData(
+//                        journeyId = journeyId!!,
+//                        latitude = location.latitude,
+//                        longitude = location.longitude
+//                    )
+//                )
                 updated.add(LatLng(location.latitude, location.longitude))
                 _localPoints.value = updated
                 onSuccess(journeyId!!)
