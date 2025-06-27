@@ -7,11 +7,13 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mileagetracker.data.CurrentJourney
 import com.example.mileagetracker.data.JourneyData
 import com.example.mileagetracker.data.PointsData
 import com.example.mileagetracker.data.Summary
 import com.example.mileagetracker.network.repositoy.JourneyRepository
 import com.example.mileagetracker.network.repositoy.PointsRepository
+import com.example.mileagetracker.network.shared_prefs.CurrentJourneyPrefsManager
 import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +28,8 @@ import javax.inject.Inject
 class TrackerViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val journeyRepository: JourneyRepository,
-    private val pointsRepository: PointsRepository
+    private val pointsRepository: PointsRepository,
+    private val currentJourneyPrefsManager: CurrentJourneyPrefsManager
 ) : ViewModel() {
     private val _localPoints = MutableStateFlow<List<LatLng>>(emptyList())
     val localPoints: StateFlow<List<LatLng>> = _localPoints
@@ -45,6 +48,15 @@ class TrackerViewModel @Inject constructor(
         _isTracking.value = true
         startForegroundService()
         addJourney(title = title, startTime, onSuccess = { id ->
+            currentJourneyPrefsManager.saveJourney(
+                currentJourney =
+                    CurrentJourney(
+                        isActive = true,
+                        id = id,
+                        title = title,
+                        startTime = startTime
+                    )
+            )
             onComplete(
                 Summary(
                     id = id,
