@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.Location
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startForegroundService
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mileagetracker.data.CurrentJourney
@@ -52,7 +53,6 @@ class TrackerViewModel @Inject constructor(
         if (journeyId != null) return
         startTime = System.currentTimeMillis()
         _isTracking.value = true
-        startForegroundService()
         addJourney(title = title, startTime, onSuccess = { id ->
             currentJourneyPrefsManager.saveJourney(
                 currentJourney =
@@ -81,7 +81,7 @@ class TrackerViewModel @Inject constructor(
             if (journeyId != null) {
                 endTime = System.currentTimeMillis()
                 journeyRepository.updateEndTime(journeyId = journeyId!!, endTime = endTime)
-                stopForegroundService()
+//                stopForegroundService()
                 _isTracking.value = false
                 _localPoints.value = emptyList()
                 elapsedJob?.cancel()
@@ -94,17 +94,17 @@ class TrackerViewModel @Inject constructor(
         }
     }
 
-    private fun startForegroundService() {
-        val intent = Intent(context, ForegroundTrackingService::class.java)
-        intent.action = "ACTION_START"
-        ContextCompat.startForegroundService(context, intent)
-    }
+//    private fun startForegroundService() {
+//        val intent = Intent(context, ForegroundTrackingService::class.java)
+//        intent.action = "ACTION_START"
+//        ContextCompat.startForegroundService(context, intent)
+//    }
 
-    private fun stopForegroundService() {
-        val intent = Intent(context, ForegroundTrackingService::class.java)
-        intent.action = "ACTION_STOP"
-        ContextCompat.startForegroundService(context, intent)
-    }
+//    private fun stopForegroundService() {
+//        val intent = Intent(context, ForegroundTrackingService::class.java)
+//        intent.action = "ACTION_STOP"
+//        ContextCompat.startForegroundService(context, intent)
+//    }
 
     fun onNewLocation(location: Location, onSuccess: (Long) -> Unit) {
         if (journeyId != null) {
@@ -167,7 +167,6 @@ class TrackerViewModel @Inject constructor(
                         )
                     }
                     startTime = currentJourney.startTime
-                    if (currentJourney.isActive) startForegroundService()
                 }
             }
             ScreenState.Loaded(result = Unit)

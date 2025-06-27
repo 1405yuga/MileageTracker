@@ -58,9 +58,10 @@ class ForegroundTrackingService : Service() {
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     private fun startTracking() {
+        Log.d(this.javaClass.name, "Current journey : $currentJourney")
+
         currentJourney?.let { currentJourney ->
             Log.d(this.javaClass.name, "Foreground service called..")
-            Log.d(this.javaClass.name, "Current journey : $currentJourney")
             startForeground(1, NotificationHelper.createNotification(this))
             Log.d(this.javaClass.name, "Foreground service started..")
             fusedClient = LocationServices.getFusedLocationProviderClient(this)

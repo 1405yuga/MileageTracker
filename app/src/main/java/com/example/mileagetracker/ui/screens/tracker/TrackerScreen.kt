@@ -1,5 +1,6 @@
 package com.example.mileagetracker.ui.screens.tracker
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,11 +25,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.example.mileagetracker.ui.screens.main.MainViewModel
 import com.example.mileagetracker.utils.helper.MapScreen
 import com.example.mileagetracker.utils.screen_state.ScreenState
+import com.example.mileagetracker.utils.services.ForegroundTrackingService
 import com.example.mileagetracker.utils.shared.LocationDataManager
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.collectLatest
@@ -45,6 +49,7 @@ fun TrackerScreen(
     val localPoints by viewModel.localPoints.collectAsState()
     val isTracking by viewModel.isTracking.collectAsState()
     val screenState by viewModel.screenState.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         LocationDataManager.location
@@ -103,7 +108,13 @@ fun TrackerScreen(
                         onClick = {
                             viewModel.startJourney(
                                 title = journeyText,
-                                onComplete = { summary -> mainViewModel.addNewToList(summary) }
+                                onComplete = { summary ->
+                                    mainViewModel.addNewToList(summary)
+                                    val intent =
+                                        Intent(context, ForegroundTrackingService::class.java)
+                                    intent.action = "ACTION_START"
+                                    ContextCompat.startForegroundService(context, intent)
+                                }
                             )
                         },
                         enabled = !isTracking,
@@ -120,6 +131,10 @@ fun TrackerScreen(
                     Button(
                         onClick = {
                             viewModel.stopJourney { summaryId, endTime ->
+                                val intent = Intent(context, ForegroundTrackingService::class.java)
+                                intent.action = "ACTION_STOP"
+                                ContextCompat.startForegroundService(context, intent)
+
                                 mainViewModel.updateEndTime(summaryId, endTime)
                                 goToSummaryScreen(summaryId)
                             }
