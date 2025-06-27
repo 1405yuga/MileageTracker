@@ -29,8 +29,18 @@ class JourneyRepository @Inject constructor(private val journeyDao: JourneyDao) 
         return journeyDao.getAllJourneys()
     }
 
-    suspend fun deleteJourneyById(id: Long): Int {
-        return journeyDao.deleteJourneyById(id = id)
+    suspend fun deleteJourneyById(
+        id: Long,
+        onSuccess: (id: Long) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        try {
+            journeyDao.deleteJourneyById(id = id)
+            onSuccess(id)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            onFailure(e)
+        }
     }
 
     suspend fun updateEndTime(journeyId: Long, endTime: Long) {

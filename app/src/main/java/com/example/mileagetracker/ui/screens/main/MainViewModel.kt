@@ -64,6 +64,16 @@ class MainViewModel @Inject constructor(
         return currentJourneyPrefsManager.getJourney()
     }
 
+    fun deleteJourney(id: Long) {
+        viewModelScope.launch {
+            journeyRepository.deleteJourneyById(id = id, onSuccess = {
+                val updated = _summaryList.value.toMutableList()
+                updated.apply { removeIf { it.id == id } }
+                _summaryList.value = updated
+            }, onFailure = {})
+        }
+    }
+
     fun loadAllSummary() {
         _screenState.value = ScreenState.Loading()
         viewModelScope.launch {

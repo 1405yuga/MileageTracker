@@ -38,13 +38,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.mileagetracker.R
-import com.example.mileagetracker.data.Summary
-import com.example.mileagetracker.network.repositoy.JourneyRepository
-import com.example.mileagetracker.network.repositoy.PointsRepository
 import com.example.mileagetracker.ui.screens.main.MainViewModel
 import com.example.mileagetracker.ui.screens.nav_menus.new_journey.NewJourneyScreen
 import com.example.mileagetracker.ui.screens.nav_menus.past.PastJourneysScreen
-import com.example.mileagetracker.utils.annotations.VerticalScreenPreview
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +57,8 @@ fun MenusScreen(
     var selectedMenu by rememberSaveable { mutableStateOf(NavMenusScreen.NewJourney) }
     val summaryList by mainViewModel.summaryList.collectAsState()
 
-    ModalNavigationDrawer(drawerState = drawerState,
+    ModalNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
                 modifier = Modifier.fillMaxHeight(),
@@ -135,7 +132,8 @@ fun MenusScreen(
                         PastJourneysScreen(
                             modifier = modifier,
                             summaryList = summaryList,
-                            onItemClick = { goToSummaryScreen(it) }
+                            onItemClick = { goToSummaryScreen(it) },
+                            onDeleteClick = { it?.let { mainViewModel.deleteJourney(it) } }
                         )
                     }
                 }

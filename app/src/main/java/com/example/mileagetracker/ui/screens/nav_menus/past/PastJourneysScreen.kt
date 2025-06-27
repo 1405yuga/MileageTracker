@@ -9,17 +9,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Route
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +38,7 @@ import com.example.mileagetracker.utils.extension_functions.toFormattedTimeStrin
 fun PastJourneysScreen(
     summaryList: List<Summary>,
     onItemClick: (summaryId: Long?) -> Unit,
+    onDeleteClick: (summaryId: Long?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (summaryList.isEmpty()) {
@@ -52,14 +56,21 @@ fun PastJourneysScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(summaryList) { summary ->
-                PastJourneyItem(summary = summary, onItemClick = { onItemClick(it) })
+                PastJourneyItem(
+                    summary = summary,
+                    onItemClick = { onItemClick(it) },
+                    onDeleteClick = { onDeleteClick(it) })
             }
         }
     }
 }
 
 @Composable
-fun PastJourneyItem(summary: Summary, onItemClick: (summaryId: Long?) -> Unit) {
+fun PastJourneyItem(
+    summary: Summary,
+    onItemClick: (summaryId: Long?) -> Unit,
+    onDeleteClick: (Long?) -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -68,11 +79,26 @@ fun PastJourneyItem(summary: Summary, onItemClick: (summaryId: Long?) -> Unit) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Outlined.Place, contentDescription = "Title")
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(summary.title, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Outlined.Place, contentDescription = "Title")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(summary.title, style = MaterialTheme.typography.titleMedium)
+                }
+
+                IconButton(
+                    onClick = { onDeleteClick(summary.id) },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -103,5 +129,5 @@ fun PastJourneyItem(summary: Summary, onItemClick: (summaryId: Long?) -> Unit) {
 @VerticalScreenPreview
 fun PastJourneysVerticalPreview() {
     PastJourneysScreen(
-        summaryList = List(5) { Summary.mock }, onItemClick = {})
+        summaryList = List(5) { Summary.mock }, onItemClick = {}, onDeleteClick = {})
 }
