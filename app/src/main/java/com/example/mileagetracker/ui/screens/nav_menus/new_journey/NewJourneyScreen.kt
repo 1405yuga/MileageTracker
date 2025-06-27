@@ -38,7 +38,8 @@ fun NewJourneyScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.FOREGROUND_SERVICE_LOCATION,
         Manifest.permission.FOREGROUND_SERVICE,
-        Manifest.permission.POST_NOTIFICATIONS
+        Manifest.permission.POST_NOTIFICATIONS,
+        Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
     )
 
     val permissionLauncher =
@@ -78,7 +79,10 @@ fun NewJourneyScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 val allGranted = permissionsToRequest.all {
-                    ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        it
+                    ) == PackageManager.PERMISSION_GRANTED
                 }
 
                 if (allGranted) {
@@ -94,7 +98,8 @@ fun NewJourneyScreen(onStart: (String) -> Unit, modifier: Modifier = Modifier) {
         ) {
             Text("Get Started")
         }
-    }}
+    }
+}
 
 @VerticalScreenPreview
 @Composable
