@@ -59,21 +59,21 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     // navigation-------------------------------------------------
-    implementation("androidx.navigation:navigation-compose:2.9.0")
+    implementation(libs.androidx.navigation.compose)
     //hilt----------------------------------------------------------
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    ksp("com.google.dagger:hilt-compiler:2.51.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
     //location---------------------------------------
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
     //map-------------------------------------------------
-    implementation("com.google.maps.android:maps-compose:6.4.1")
+    implementation(libs.maps.compose)
     //gson---------------------------------------------
-    implementation("com.google.code.gson:gson:2.13.1")
+    implementation(libs.gson)
     //room----------------------------------------------
-    implementation("androidx.room:room-runtime:2.7.2")
-    ksp("androidx.room:room-compiler:2.7.2")
-    implementation("androidx.room:room-ktx:2.7.2")
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
     //material-icons------------------------------
-    implementation("androidx.compose.material:material-icons-extended")}
+    implementation(libs.androidx.material.icons.extended)}
