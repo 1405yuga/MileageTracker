@@ -64,23 +64,25 @@ class ForegroundTrackingService : Service() {
             startForeground(1, NotificationHelper.createNotification(this))
             Log.d(this.javaClass.name, "Foreground service started..")
             fusedClient = LocationServices.getFusedLocationProviderClient(this)
-            val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
-                .setMinUpdateDistanceMeters(10f)
-                .build()
+            if (currentJourney.isActive) {
+                val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                    .setMinUpdateDistanceMeters(10f)
+                    .build()
 
-            locationCallback = object : LocationCallback() {
-                override fun onLocationResult(p0: LocationResult) {
-                    p0.lastLocation?.let {
-                        sendLocationToViewModel(currentJourney.id, it)
+                locationCallback = object : LocationCallback() {
+                    override fun onLocationResult(p0: LocationResult) {
+                        p0.lastLocation?.let {
+                            sendLocationToViewModel(currentJourney.id, it)
+                        }
                     }
                 }
-            }
 
-            fusedClient.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                Looper.getMainLooper()
-            )
+                fusedClient.requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper()
+                )
+            }
         }
     }
 
